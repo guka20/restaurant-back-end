@@ -6,7 +6,6 @@ import { UserEntity } from './UserEntity/user.entity';
 import { EncryptModule } from '@app/restaurant/libs/restaurant/src';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-
 @Module({
   imports: [
     EncryptModule,
