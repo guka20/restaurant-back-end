@@ -7,6 +7,7 @@ import {
   IsEnum,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Exclude } from 'class-transformer';
 export class CreateUserDto {
   @ApiProperty()
   @IsNotEmpty()
@@ -35,13 +36,13 @@ export class CreateUserDto {
 
 export class UserDto {
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   fullname: string;
 
   @ApiProperty()
   email: string;
-
-  @ApiProperty()
-  password: string;
 
   @ApiProperty()
   image: string;

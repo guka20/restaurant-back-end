@@ -1,15 +1,21 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   UploadedFile,
+  UseGuards,
+  Request,
   UseInterceptors,
 } from '@nestjs/common';
-import { CreateUserDto, LogInDto } from '../dto/UserDto';
+import { CreateUserDto, LogInDto, UserDto } from '../dto/UserDto';
 import { AuthService } from '../service/auth.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerOptions } from 'src/config/multer.config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from '../guard/auth.guard';
 
 @Controller('auth')
 @ApiTags('auth')
@@ -31,5 +37,14 @@ export class AuthController {
     @Body() userDto: CreateUserDto,
   ): Promise<void> {
     this.authService.createUser(userDto, image.path);
+  }
+
+  @Get(':uuid')
+  @UseGuards(AuthGuard)
+  async getUserById(
+    @Request() req,
+    @Param('uuid', new ParseUUIDPipe()) id: string,
+  ): Promise<UserDto> {
+    return this.authService.getUseById(id, req?.user?.sub, req?.user?.role);
   }
 }

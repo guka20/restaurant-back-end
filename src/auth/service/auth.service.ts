@@ -4,14 +4,14 @@ import {
   HttpStatus,
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, LogInDto } from '../dto/UserDto';
+import { CreateUserDto, LogInDto, UserDto } from '../dto/UserDto';
 import { QueryFailedError, Repository } from 'typeorm';
 import { UserEntity } from '../UserEntity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EncryptService } from '@app/restaurant/libs/restaurant/src/encrypt/service/encrypt.service';
 import { JwtService } from '@nestjs/jwt';
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -51,5 +51,18 @@ export class AuthService {
         throw new HttpException('email already in use', HttpStatus.CONFLICT);
       throw err;
     });
+  }
+
+  async getUseById(
+    id: string,
+    tokenId: string,
+    role: string,
+  ): Promise<UserDto> {
+    const user = await this.authRepository.findOneBy({ id });
+    if (!user || tokenId !== id || user.role !== role) {
+      throw new NotFoundException('User not found');
+    }
+    const { password, ...restData } = user;
+    return restData;
   }
 }
