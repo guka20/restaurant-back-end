@@ -10,13 +10,7 @@ import { ConfigService } from '@nestjs/config';
   imports: [
     EncryptModule,
     TypeOrmModule.forFeature([UserEntity]),
-    JwtModule.registerAsync({
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.getOrThrow('SECRET_KEY'),
-      }),
-      global: true,
-      inject: [ConfigService],
-    }),
+   
   ],
   providers: [AuthService],
   controllers: [AuthController],
