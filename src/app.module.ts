@@ -5,8 +5,10 @@ import { DatabaseModule } from './database/database.module';
 import { UserEntity } from './auth/UserEntity/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { ProductModule } from './product/product.module';
 @Module({
   imports: [
+    ProductModule,
     AuthModule,
     DatabaseModule,
     JwtModule.registerAsync({
