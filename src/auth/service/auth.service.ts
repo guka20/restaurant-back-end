@@ -51,10 +51,6 @@ export class AuthService {
       throw err;
     });
   }
-  async getAll() {
-    const users = await this.authRepository.find({ relations: ['products'] });
-    return users;
-  }
 
   async getUseById(
     id: string,

@@ -45,8 +45,5 @@ export class AuthController {
     return this.authService.getUseById(id, req?.user?.sub, req?.user?.role);
   }
 
-  @Get('')
-  async getList() {
-    return this.authService.getAll();
-  }
+
 }
