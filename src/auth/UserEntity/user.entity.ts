@@ -1,5 +1,6 @@
+import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import { UserRole } from 'src/types/user.types';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity('user')
 export class UserEntity {
@@ -12,7 +13,7 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ default: null })
@@ -23,4 +24,7 @@ export class UserEntity {
     enum: UserRole,
   })
   role: UserRole;
+
+  @OneToMany(() => ProductEntity, (product) => product.owner)
+  products: ProductEntity[];
 }
