@@ -31,20 +31,22 @@ export class AuthController {
   @Post()
   @ApiOperation({ summary: 'register user' })
   @ApiResponse({ status: 409, description: 'email already in use' })
-  @UseInterceptors(FileInterceptor('image', multerOptions))
-  async createUser(
-    @UploadedFile() image: Express.Multer.File,
-    @Body() userDto: CreateUserDto,
-  ): Promise<void> {
-    this.authService.createUser(userDto, image.path);
+  async createUser(@Body() userDto: CreateUserDto): Promise<void> {
+    this.authService.createUser(userDto);
   }
 
   @Get(':uuid')
+  @ApiOperation({ summary: 'Get User By Id' })
   @UseGuards(AuthGuard)
   async getUserById(
     @Request() req,
     @Param('uuid', new ParseUUIDPipe()) id: string,
   ): Promise<UserDto> {
     return this.authService.getUseById(id, req?.user?.sub, req?.user?.role);
+  }
+
+  @Get('')
+  async getList() {
+    return this.authService.getAll();
   }
 }

@@ -7,6 +7,8 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
   CreateProductDto,
@@ -14,13 +16,23 @@ import {
   UpdateProductDto,
 } from '../dto/ProductDto';
 import { ProductService } from '../service/product.service';
+import { ApiTags } from '@nestjs/swagger';
+import { ProductGuard } from '../guard/product.guard';
 
 @Controller('product')
+@ApiTags('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Post('new')
-  async createProduct(@Body() createProductDto: CreateProductDto) {
-    this.productService.createNewProduct(createProductDto);
+  @UseGuards(ProductGuard)
+  async createProduct(
+    @Body() createProductDto: CreateProductDto,
+    @Request() request: Request,
+  ) {
+    const userId = request['user'].sub;
+    console.log(userId);
+
+    this.productService.createNewProduct(createProductDto, userId);
   }
 
   @Get()
@@ -36,6 +48,7 @@ export class ProductController {
   }
 
   @Patch(':product_id')
+  @UseGuards(ProductGuard)
   async updateProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -43,6 +56,7 @@ export class ProductController {
     this.productService.updateProductById(productId, updateProductDto);
   }
   @Delete(':product_id')
+  @UseGuards(ProductGuard)
   async deleteProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
   ): Promise<void> {

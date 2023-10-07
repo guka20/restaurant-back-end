@@ -10,8 +10,8 @@ import { CreateUserDto, LogInDto, UserDto } from '../dto/UserDto';
 import { QueryFailedError, Repository } from 'typeorm';
 import { UserEntity } from '../UserEntity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EncryptService } from '@app/restaurant/libs/restaurant/src/encrypt/service/encrypt.service';
 import { JwtService } from '@nestjs/jwt';
+import { EncryptService } from '@app/restaurant/encrypt/service/encrypt.service';
 @Injectable()
 export class AuthService {
   constructor(
@@ -39,10 +39,9 @@ export class AuthService {
     };
   }
 
-  async createUser(userDto: CreateUserDto, image: string): Promise<void> {
+  async createUser(userDto: CreateUserDto): Promise<void> {
     const newUser = {
       ...userDto,
-      image,
     };
     newUser.password = await this.encryptService.hashPassword(userDto.password);
     const user = this.authRepository.create(newUser);
@@ -52,17 +51,23 @@ export class AuthService {
       throw err;
     });
   }
+  async getAll() {
+    const users = await this.authRepository.find({ relations: ['products'] });
+    return users;
+  }
 
   async getUseById(
     id: string,
     tokenId: string,
     role: string,
   ): Promise<UserDto> {
-    const user = await this.authRepository.findOneBy({ id });
+    const user = await this.authRepository.findOne({
+      where: { id },
+      relations: ['products'],
+    });
     if (!user || tokenId !== id || user.role !== role) {
       throw new NotFoundException('User not found');
     }
-    const { password, ...restData } = user;
-    return restData;
+    return user;
   }
 }

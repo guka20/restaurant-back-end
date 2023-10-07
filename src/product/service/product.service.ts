@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateProductDto,
   ProductDto,
@@ -7,23 +7,36 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductEntity } from '../ProductEntity/product.entity';
+import { UserEntity } from 'src/auth/UserEntity/user.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async createNewProduct(createProductDto: CreateProductDto): Promise<void> {
+  async createNewProduct(
+    createProductDto: CreateProductDto,
+    userId: string,
+  ): Promise<void> {
     const product = this.productRepository.create(createProductDto);
+    const user = await this.userRepository.findOneBy({ id: userId });
+    product.owner = user;
     this.productRepository.save(product);
   }
   async getAllProducts(): Promise<ProductDto[]> {
-    const products = this.productRepository.find();
+    const products = await this.productRepository.find();
     return products;
   }
+
   async getProductById(id: string): Promise<ProductDto> {
-    const product = await this.productRepository.findOneBy({ id });
+    const product = await this.productRepository.findOne({
+      where: {
+        id,
+      },
+    });
     if (!product) throw new NotFoundException('Product not found');
     return product;
   }

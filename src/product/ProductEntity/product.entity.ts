@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserEntity } from 'src/auth/UserEntity/user.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('products')
 export class ProductEntity {
@@ -16,4 +23,8 @@ export class ProductEntity {
 
   @Column()
   category: string;
+
+  @ManyToOne(() => UserEntity, (user) => user.products)
+  @JoinColumn({ name: 'owner' })
+  owner: UserEntity;
 }
