@@ -1,3 +1,4 @@
+import { PageOptionDto } from './../../../libs/restaurant/src/pagination/types/pagination.types';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import {
   CreateProductDto,
@@ -8,6 +9,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ProductEntity } from '../ProductEntity/product.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
+import { PaginationService } from '@app/restaurant/pagination/pagination.service';
+import { PageDto } from '@app/restaurant/pagination/dto/page.dto';
 
 @Injectable()
 export class ProductService {
@@ -16,6 +19,7 @@ export class ProductService {
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    private readonly paginationService: PaginationService,
   ) {}
   async createNewProduct(
     createProductDto: CreateProductDto,
@@ -26,9 +30,16 @@ export class ProductService {
     product.owner = user;
     this.productRepository.save(product);
   }
-  async getAllProducts(): Promise<ProductDto[]> {
-    const products = await this.productRepository.find();
-    return products;
+  async getAllProducts(
+    pageOptionsDto: PageOptionDto,
+  ): Promise<PageDto<ProductDto>> {
+    let queryBuilder = this.productRepository.createQueryBuilder('products');
+
+    const paginatedProducts = this.paginationService.getpage(
+      pageOptionsDto,
+      queryBuilder,
+    ); 
+    return paginatedProducts;
   }
 
   async getProductById(id: string): Promise<ProductDto> {

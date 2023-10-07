@@ -7,6 +7,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  Query,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +19,8 @@ import {
 import { ProductService } from '../service/product.service';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductGuard } from '../guard/product.guard';
+import { PageDto } from '@app/restaurant/pagination/dto/page.dto';
+import { PageOptionDto } from '@app/restaurant/pagination/types/pagination.types';
 
 @Controller('product')
 @ApiTags('product')
@@ -36,8 +39,10 @@ export class ProductController {
   }
 
   @Get()
-  async getAllProducts(): Promise<ProductDto[]> {
-    return this.productService.getAllProducts();
+  async getAllProducts(
+    @Query() pageOptionDto: PageOptionDto,
+  ): Promise<PageDto<ProductDto>> {
+    return this.productService.getAllProducts(pageOptionDto);
   }
 
   @Get(':product_id')

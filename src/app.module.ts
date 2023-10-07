@@ -2,10 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
-import { UserEntity } from './auth/UserEntity/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ProductModule } from './product/product.module';
+import { PaginationModule } from '@app/restaurant';
 @Module({
   imports: [
     ProductModule,
