@@ -1,6 +1,14 @@
+import { IsOptional } from 'class-validator';
+import { CartEntity } from 'src/cart/entity/cart.entity';
 import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import { UserRole } from 'src/types/user.types';
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 
 @Entity('user')
 export class UserEntity {
@@ -13,7 +21,7 @@ export class UserEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column()
   password: string;
 
   @Column({ default: null })
@@ -22,9 +30,15 @@ export class UserEntity {
   @Column({
     type: 'enum',
     enum: UserRole,
+    default: UserRole.USER,
   })
+  @IsOptional()
   role: UserRole;
 
   @OneToMany(() => ProductEntity, (product) => product.owner)
   products: ProductEntity[];
+
+  @OneToMany(() => CartEntity, (cart) => cart.cartowner)
+  @JoinColumn({ name: 'carts' })
+  carts: CartEntity[];
 }

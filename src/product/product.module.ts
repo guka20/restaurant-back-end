@@ -7,12 +7,13 @@ import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { PaginationModule } from '@app/restaurant';
+import { CartEntity } from 'src/cart/entity/cart.entity';
 @Module({
   imports: [
     JwtModule,
     ConfigModule,
     PaginationModule,
-    TypeOrmModule.forFeature([ProductEntity, UserEntity]),
+    TypeOrmModule.forFeature([ProductEntity, UserEntity, CartEntity]),
   ],
   controllers: [ProductController],
   providers: [ProductService],

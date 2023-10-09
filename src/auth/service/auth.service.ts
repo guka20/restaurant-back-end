@@ -23,6 +23,7 @@ export class AuthService {
 
   async logInUser(@Body() logInDto: LogInDto) {
     const user = await this.authRepository.findOneBy({ email: logInDto.email });
+
     if (!user)
       throw new HttpException('Invalid email address', HttpStatus.BAD_REQUEST);
     let isPasswordCorrect = await this.encryptService.validatePassword(
@@ -53,9 +54,9 @@ export class AuthService {
   }
 
   async getUseById(
-    id: string,
+    id: string, 
     tokenId: string,
-    role: string,
+    role: string, 
   ): Promise<UserDto> {
     const user = await this.authRepository.findOne({
       where: { id },

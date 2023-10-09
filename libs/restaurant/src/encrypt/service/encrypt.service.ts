@@ -24,6 +24,7 @@ export class EncryptService {
     password: string,
   ): Promise<boolean> {
     const salt = this.getSalt(oldPasswordHash);
+
     if ((await this.hashPassword(password, salt)) !== oldPasswordHash)
       return false;
     return true;
