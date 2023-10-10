@@ -4,12 +4,10 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { Observable } from 'rxjs';
 
 @Injectable()
 export class ProductGuard implements CanActivate {
@@ -36,7 +34,7 @@ export class ProductGuard implements CanActivate {
     } catch (err) {
       if (err.status === 403) throw new Error(err);
       throw new UnauthorizedException();
-    } 
+    }
     return true;
   }
   extractTokenFromHeader(request: any) {

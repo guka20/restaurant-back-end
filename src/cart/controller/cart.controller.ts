@@ -10,11 +10,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CartService } from '../service/cart.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CartDto, CreateCartDto } from '../dto/cart.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('cart')
+@ApiTags('Carts')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
   @Post()
@@ -28,7 +29,7 @@ export class CartController {
   }
 
   @Patch(':cart_id')
-  @ApiOperation({ summary: 'Add Quantity In The Cart' })
+  @ApiOperation({ summary: 'Change Quantity Of Product In Cart' })
   @UseGuards(AuthGuard)
   async changeQuantity(
     @Body() quantityDto: { quantity: number },
