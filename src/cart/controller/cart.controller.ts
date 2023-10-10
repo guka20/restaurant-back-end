@@ -27,13 +27,14 @@ export class CartController {
     this.cartService.createCart(createCartDto, req['user'].sub);
   }
 
-  @Patch('cart_id')
+  @Patch(':cart_id')
   @ApiOperation({ summary: 'Add Quantity In The Cart' })
   @UseGuards(AuthGuard)
-  async addQuantity(
+  async changeQuantity(
+    @Body() quantityDto: { quantity: number },
     @Param('cart_id', new ParseUUIDPipe()) cart_id: string,
   ): Promise<void> {
-    this.cartService.changeQuantity(cart_id);
+    this.cartService.changeQuantity(cart_id, quantityDto.quantity);
   }
   @Get('all')
   @ApiOperation({ summary: 'Get All Carts' })

@@ -1,3 +1,4 @@
+import { Min } from 'class-validator';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import {
@@ -25,5 +26,6 @@ export class CartEntity {
   product: ProductEntity;
 
   @Column({ default: 1 })
+  @Min(1)
   quantity: number;
 }

@@ -20,7 +20,6 @@ export class CartService {
     const product = await this.productRepository.findOneBy({
       product_id: createCartDto.productId,
     });
-
     const user = await this.userRepository.findOneBy({
       id: ownerId,
     });
@@ -33,13 +32,21 @@ export class CartService {
     await this.cartRepository.save(newCart);
   }
 
-  async changeQuantity(product_id: string) {
-    console.log(product_id);
+  async changeQuantity(cart_id: string, quantity: number) {
+
+    const updatedCart = await this.cartRepository
+      .createQueryBuilder()
+      .update(CartEntity)
+      .set({
+        quantity,
+      })
+      .where('cart_item_id=:cart_item_id', { cart_item_id: cart_id })
+      .execute();
+    if (updatedCart.affected === 0) {
+      throw new NotFoundException('Product not found');
+    }
   }
   async GetCarts(owner_id: string): Promise<CartDto[]> {
-    console.log(owner_id);
-    const user = await this.userRepository.findOne({ where: { id: owner_id } });
-
     const carts = await this.cartRepository.find({
       where: {
         cartowner: {
