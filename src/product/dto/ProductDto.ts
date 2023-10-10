@@ -23,7 +23,7 @@ export class CreateProductDto {
 
 export class ProductDto {
   @ApiProperty()
-  id: string;
+  product_id: string;
 
   @ApiProperty()
   name: string;

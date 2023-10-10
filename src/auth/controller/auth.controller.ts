@@ -5,15 +5,12 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
-  UploadedFile,
   UseGuards,
   Request,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto, LogInDto, UserDto } from '../dto/UserDto';
 import { AuthService } from '../service/auth.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { multerOptions } from 'src/config/multer.config';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '../guard/auth.guard';
 
@@ -44,6 +41,4 @@ export class AuthController {
   ): Promise<UserDto> {
     return this.authService.getUseById(id, req?.user?.sub, req?.user?.role);
   }
-
-
 }

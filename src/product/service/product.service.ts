@@ -38,14 +38,14 @@ export class ProductService {
     const paginatedProducts = this.paginationService.getpage(
       pageOptionsDto,
       queryBuilder,
-    ); 
+    );
     return paginatedProducts;
   }
 
   async getProductById(id: string): Promise<ProductDto> {
     const product = await this.productRepository.findOne({
       where: {
-        id,
+        product_id: id,
       },
     });
     if (!product) throw new NotFoundException('Product not found');

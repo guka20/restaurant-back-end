@@ -17,7 +17,7 @@ import {
   UpdateProductDto,
 } from '../dto/ProductDto';
 import { ProductService } from '../service/product.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ProductGuard } from '../guard/product.guard';
 import { PageDto } from '@app/restaurant/pagination/dto/page.dto';
 import { PageOptionDto } from '@app/restaurant/pagination/types/pagination.types';
@@ -28,6 +28,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
   @Post('new')
   @UseGuards(ProductGuard)
+  @ApiOperation({ summary: 'create product' })
   async createProduct(
     @Body() createProductDto: CreateProductDto,
     @Request() request: Request,
@@ -39,6 +40,7 @@ export class ProductController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get All Products' })
   async getAllProducts(
     @Query() pageOptionDto: PageOptionDto,
   ): Promise<PageDto<ProductDto>> {
@@ -46,6 +48,7 @@ export class ProductController {
   }
 
   @Get(':product_id')
+  @ApiOperation({ summary: 'Get Product By Id' })
   async getProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
   ): Promise<ProductDto> {
@@ -54,6 +57,7 @@ export class ProductController {
 
   @Patch(':product_id')
   @UseGuards(ProductGuard)
+  @ApiOperation({ summary: 'Update Product By Id' })
   async updateProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -62,6 +66,7 @@ export class ProductController {
   }
   @Delete(':product_id')
   @UseGuards(ProductGuard)
+  @ApiOperation({ summary: 'Delete Product By Id' })
   async deleteProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
   ): Promise<void> {
