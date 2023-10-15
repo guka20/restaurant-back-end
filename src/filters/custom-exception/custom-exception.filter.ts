@@ -12,9 +12,7 @@ export class CustomExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const status = exception.getStatus();
     const mess = exception.getResponse();
-
     const message = Array.isArray(mess['message']) ? mess['message'][0] : mess;
-
     response.status(status).json({
       statusCode: status,
       message: message,
