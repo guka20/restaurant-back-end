@@ -17,6 +17,8 @@ export class PageOptionDto {
   @Type(() => Number)
   readonly page?: number = 1;
 
+  readonly category?: string;
+
   @Exclude()
   get skip(): number {
     return (this.page - 1) * this.take;

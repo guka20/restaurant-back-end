@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -19,6 +19,11 @@ export class CreateProductDto {
   @IsNotEmpty()
   @ApiProperty()
   category: string;
+
+  @IsNotEmpty()
+  @ApiProperty()
+  @IsUrl()
+  image: string;
 }
 
 export class ProductDto {
@@ -36,6 +41,9 @@ export class ProductDto {
 
   @ApiProperty()
   category: string;
+
+  @ApiProperty()
+  image: string;
 }
 export class UpdateProductDto {
   @ApiProperty()

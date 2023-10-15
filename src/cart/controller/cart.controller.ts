@@ -23,8 +23,8 @@ export class CartController {
   async createCart(
     @Req() req: Request,
     @Body() createCartDto: CreateCartDto,
-  ): Promise<void> {
-    this.cartService.createCart(createCartDto, req['user'].sub);
+  ): Promise<CartDto> {
+    return this.cartService.createCart(createCartDto, req['user'].sub);
   }
 
   @Patch(':cart_id')

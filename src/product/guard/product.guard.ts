@@ -26,7 +26,6 @@ export class ProductGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.getOrThrow('SECRET_KEY'),
       });
-      console.log(payload);
       if (payload.role !== 'ADMIN')
         throw new HttpException(
           'User is not able to do that type of request',
@@ -36,7 +35,7 @@ export class ProductGuard implements CanActivate {
     } catch (err) {
       if (err.status === 403) throw new Error(err);
       throw new UnauthorizedException();
-    } 
+    }
     return true;
   }
   extractTokenFromHeader(request: any) {

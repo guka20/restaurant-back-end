@@ -34,7 +34,6 @@ export class ProductService {
     pageOptionsDto: PageOptionDto,
   ): Promise<PageDto<ProductDto>> {
     let queryBuilder = this.productRepository.createQueryBuilder('products');
-
     const paginatedProducts = this.paginationService.getpage(
       pageOptionsDto,
       queryBuilder,

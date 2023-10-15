@@ -12,7 +12,7 @@ export class PaginationService {
     queryBuilder.skip(pageOptions.skip).take(pageOptions.take);
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
-    
+
     const pageMetaDto = new PageMetaDto({
       itemCount,
       pageOptionsDto: pageOptions,

@@ -27,6 +27,9 @@ export class ProductEntity {
   @Column()
   category: string;
 
+  @Column()
+  image: string;
+
   @ManyToOne(() => UserEntity, (user) => user.products)
   @JoinColumn({ name: 'owner' })
   owner: UserEntity;

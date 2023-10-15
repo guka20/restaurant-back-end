@@ -16,7 +16,10 @@ export class CartService {
     @InjectRepository(CartEntity)
     private readonly cartRepository: Repository<CartEntity>,
   ) {}
-  async createCart(createCartDto: CreateCartDto, ownerId: string) {
+  async createCart(
+    createCartDto: CreateCartDto,
+    ownerId: string,
+  ): Promise<CartDto> {
     const product = await this.productRepository.findOneBy({
       product_id: createCartDto.productId,
     });
@@ -29,11 +32,11 @@ export class CartService {
     const newCart = this.cartRepository.create();
     newCart.cartowner = user;
     newCart.product = product;
-    await this.cartRepository.save(newCart);
+    const data = await this.cartRepository.save(newCart);
+    return data;
   }
 
   async changeQuantity(cart_id: string, quantity: number) {
-
     const updatedCart = await this.cartRepository
       .createQueryBuilder()
       .update(CartEntity)
