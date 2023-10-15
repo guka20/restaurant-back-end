@@ -49,7 +49,7 @@ export class AuthService {
     const user = this.authRepository.create(newUser);
     await this.authRepository.save(user).catch((err: QueryFailedError) => {
       if (err.driverError.code == 'ER_DUP_ENTRY')
-        throw new ConflictException('email already in use');
+        throw new HttpException('email already in use', HttpStatus.CONFLICT);
       throw err;
     });
   }
