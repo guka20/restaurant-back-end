@@ -4,10 +4,9 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ProductModule } from './product/product.module';
-import { PaginationModule } from '@app/restaurant';
-import { CartController } from './cart/controller/cart.controller';
-import { CartService } from './cart/service/cart.service';
 import { CartModule } from './cart/cart.module';
+import { CustomExceptionFilter } from './filters/custom-exception/custom-exception.filter';
+import { APP_FILTER } from '@nestjs/core';
 @Module({
   imports: [
     ProductModule,
@@ -26,6 +25,11 @@ import { CartModule } from './cart/cart.module';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: CustomExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}

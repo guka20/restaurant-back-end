@@ -19,17 +19,17 @@ export class CreateUserDto {
   @ApiProperty()
   email: string;
 
-  @IsNotEmpty()
   @MinLength(6)
   @MaxLength(12)
   @ApiProperty({ description: 'min 6 max 12 symbols' })
+  @IsNotEmpty()
   password: string;
 
   @ApiProperty()
   image: string;
 
   @IsEnum(UserRole)
-  @ApiProperty() 
+  @ApiProperty()
   @IsOptional()
   role: UserRole;
 }
