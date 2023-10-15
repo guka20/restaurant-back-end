@@ -29,7 +29,7 @@ export class AuthController {
   @ApiOperation({ summary: 'register user' })
   @ApiResponse({ status: 409, description: 'email already in use' })
   async createUser(@Body() userDto: CreateUserDto): Promise<void> {
-    this.authService.createUser(userDto);
+    return this.authService.createUser(userDto);
   }
 
   @Get(':uuid')

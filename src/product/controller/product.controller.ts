@@ -34,8 +34,6 @@ export class ProductController {
     @Request() request: Request,
   ) {
     const userId = request['user'].sub;
-    console.log(userId);
-
     this.productService.createNewProduct(createProductDto, userId);
   }
 

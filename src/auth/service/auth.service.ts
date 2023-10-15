@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   HttpException,
   HttpStatus,
   Inject,
@@ -48,15 +49,15 @@ export class AuthService {
     const user = this.authRepository.create(newUser);
     await this.authRepository.save(user).catch((err: QueryFailedError) => {
       if (err.driverError.code == 'ER_DUP_ENTRY')
-        throw new HttpException('email already in use', HttpStatus.CONFLICT);
+        throw new ConflictException('email already in use');
       throw err;
     });
   }
 
   async getUseById(
-    id: string, 
+    id: string,
     tokenId: string,
-    role: string, 
+    role: string,
   ): Promise<UserDto> {
     const user = await this.authRepository.findOne({
       where: { id },
