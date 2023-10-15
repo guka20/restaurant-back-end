@@ -17,6 +17,8 @@ export class PageOptionDto {
   @Type(() => Number)
   readonly page?: number = 1;
 
+  @IsOptional()
+  @ApiPropertyOptional()
   readonly category?: string;
 
   @Exclude()

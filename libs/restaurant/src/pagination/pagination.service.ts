@@ -9,7 +9,13 @@ export class PaginationService {
     pageOptions: PageOptionDto,
     queryBuilder: SelectQueryBuilder<T>,
   ) {
-    queryBuilder.skip(pageOptions.skip).take(pageOptions.take);
+    pageOptions.category
+      ? queryBuilder
+          .skip(pageOptions.skip)
+          .take(pageOptions.take)
+          .where('category=:category', { category: pageOptions.category })
+      : queryBuilder.skip(pageOptions.skip).take(pageOptions.take);
+
     const itemCount = await queryBuilder.getCount();
     const { entities } = await queryBuilder.getRawAndEntities();
 
