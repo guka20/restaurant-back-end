@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -10,11 +11,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CartService } from '../service/cart.service';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CartDto, CreateCartDto } from '../dto/cart.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('cart')
+@ApiTags('Cart')
 export class CartController {
   constructor(private readonly cartService: CartService) {}
   @Post()
@@ -28,14 +30,22 @@ export class CartController {
   }
 
   @Patch(':cart_id')
-  @ApiOperation({ summary: 'Add Quantity In The Cart' })
+  @ApiOperation({ summary: 'Change Quantity in cart' })
   @UseGuards(AuthGuard)
   async changeQuantity(
     @Body() quantityDto: { quantity: number },
     @Param('cart_id', new ParseUUIDPipe()) cart_id: string,
   ): Promise<void> {
-    this.cartService.changeQuantity(cart_id, quantityDto.quantity);
+    return this.cartService.changeQuantity(cart_id, quantityDto.quantity);
   }
+
+  @Delete(':cart_id')
+  @ApiOperation({ summary: 'Delete Cart Item' })
+  @UseGuards(AuthGuard)
+  async deleteCartItem(@Param('cart_id', new ParseUUIDPipe()) cart_id: string) {
+    return this.cartService.deleteCartItem(cart_id);
+  }
+
   @Get('all')
   @ApiOperation({ summary: 'Get All Carts' })
   @UseGuards(AuthGuard)

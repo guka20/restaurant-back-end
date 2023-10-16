@@ -1,5 +1,10 @@
 import { Repository } from 'typeorm';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CartEntity } from '../entity/cart.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from 'src/product/ProductEntity/product.entity';
@@ -36,7 +41,7 @@ export class CartService {
     return data;
   }
 
-  async changeQuantity(cart_id: string, quantity: number) {
+  async changeQuantity(cart_id: string, quantity: number): Promise<void> {
     const updatedCart = await this.cartRepository
       .createQueryBuilder()
       .update(CartEntity)
@@ -46,7 +51,18 @@ export class CartService {
       .where('cart_item_id=:cart_item_id', { cart_item_id: cart_id })
       .execute();
     if (updatedCart.affected === 0) {
-      throw new NotFoundException('Product not found');
+      throw new HttpException('Could not find product', HttpStatus.NOT_FOUND);
+    }
+  }
+  async deleteCartItem(cart_id: string): Promise<void> {
+    const deletedCart = await this.cartRepository
+      .createQueryBuilder()
+      .delete()
+      .from(CartEntity)
+      .where('cart_item_id=:cart_item_id', { cart_item_id: cart_id })
+      .execute();
+    if (deletedCart.affected === 0) {
+      throw new HttpException('Could not find product', HttpStatus.NOT_FOUND);
     }
   }
   async GetCarts(owner_id: string): Promise<CartDto[]> {
@@ -56,7 +72,7 @@ export class CartService {
           id: owner_id,
         },
       },
-      relations: ['cartowner', 'product'],
+      relations: ['product'],
     });
 
     return carts;
