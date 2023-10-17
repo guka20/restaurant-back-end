@@ -2,14 +2,14 @@ import { Module } from '@nestjs/common';
 import { CartController } from './controller/cart.controller';
 import { CartService } from './service/cart.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ProductEntity } from 'src/product/ProductEntity/product.entity';
-import { CartEntity } from './entity/cart.entity';
+import { CartItemEntity } from 'src/cart-item/entity/cartitem.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { CartEntity } from './entity/cart.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProductEntity, CartEntity, UserEntity]),
+    TypeOrmModule.forFeature([CartItemEntity, UserEntity, CartEntity]),
     ConfigModule,
   ],
   controllers: [CartController],

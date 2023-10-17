@@ -1,10 +1,10 @@
+import { AdminEntity } from 'src/auth/UserEntity/admin.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
-import { CartEntity } from 'src/cart/entity/cart.entity';
+import { CartItemEntity } from 'src/cart-item/entity/cartitem.entity';
 import {
   Column,
   Entity,
   JoinColumn,
-  JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -30,10 +30,10 @@ export class ProductEntity {
   @Column()
   image: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.products)
+  @ManyToOne(() => AdminEntity, (admin) => admin.products)
   @JoinColumn({ name: 'owner' })
-  owner: UserEntity;
+  owner: AdminEntity;
 
-  @OneToMany(() => CartEntity, (cart) => cart.product)
-  carts: CartEntity[];
+  @OneToMany(() => CartItemEntity, (cartitem) => cartitem.product)
+  cartitems: CartItemEntity[];
 }

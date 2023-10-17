@@ -4,14 +4,18 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ProductModule } from './product/product.module';
-import { CartModule } from './cart/cart.module';
+import { CartItemModule } from './cart-item/cartitem.module';
 import { CustomExceptionFilter } from './filters/custom-exception/custom-exception.filter';
 import { APP_FILTER } from '@nestjs/core';
+import { CartController } from './cart/controller/cart.controller';
+import { CartService } from './cart/service/cart.service';
+import { CartModule } from './cart/cart.module';
 @Module({
   imports: [
     ProductModule,
     AuthModule,
     DatabaseModule,
+    CartItemModule,
     CartModule,
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({

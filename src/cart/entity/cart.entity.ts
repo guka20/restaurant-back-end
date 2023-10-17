@@ -1,13 +1,9 @@
-import { Min } from 'class-validator';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
-import { ProductEntity } from 'src/product/ProductEntity/product.entity';
+import { CartItemEntity } from 'src/cart-item/entity/cartitem.entity';
 import {
-  Column,
   Entity,
   JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -15,17 +11,13 @@ import {
 @Entity('cart')
 export class CartEntity {
   @PrimaryGeneratedColumn('uuid')
-  cart_item_id: string;
+  cart_id: string;
 
-  @ManyToOne(() => UserEntity, (user) => user.carts)
-  @JoinColumn({ name: 'cartowner_id' })
-  cartowner: UserEntity;
+  @OneToOne(() => UserEntity, (user) => user.cart)
+  @JoinColumn({ name: 'user_id' })
+  user: UserEntity;
 
-  @ManyToOne(() => ProductEntity, (product) => product.carts)
-  @JoinColumn({ name: 'product' })
-  product: ProductEntity;
-
-  @Column({ default: 1 })
-  @Min(1)
-  quantity: number;
+  @OneToMany(() => CartItemEntity, (cartitem) => cartitem.cart)
+  @JoinColumn({ name: 'cart_items' })
+  cartItems: CartItemEntity[];
 }

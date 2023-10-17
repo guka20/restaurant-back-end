@@ -1,5 +1,11 @@
 import { PageOptionDto } from './../../../libs/restaurant/src/pagination/types/pagination.types';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   CreateProductDto,
   ProductDto,
@@ -11,23 +17,27 @@ import { ProductEntity } from '../ProductEntity/product.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { PaginationService } from '@app/restaurant/pagination/pagination.service';
 import { PageDto } from '@app/restaurant/pagination/dto/page.dto';
+import { AdminEntity } from 'src/auth/UserEntity/admin.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(AdminEntity)
+    private readonly adminRepository: Repository<AdminEntity>,
     private readonly paginationService: PaginationService,
   ) {}
   async createNewProduct(
     createProductDto: CreateProductDto,
-    userId: string,
+    adminId: string,
   ): Promise<void> {
     const product = this.productRepository.create(createProductDto);
-    const user = await this.userRepository.findOneBy({ id: userId });
-    product.owner = user;
+    const admin = await this.adminRepository.findOneBy({ id: adminId });
+    if (!admin) {
+      throw new HttpException('Could not find admin', HttpStatus.NOT_FOUND);
+    }
+    product.owner = admin;
     this.productRepository.save(product);
   }
   async getAllProducts(
@@ -47,7 +57,8 @@ export class ProductService {
         product_id: id,
       },
     });
-    if (!product) throw new NotFoundException('Product not found');
+    if (!product)
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     return product;
   }
   async updateProductById(
@@ -58,16 +69,18 @@ export class ProductService {
       .createQueryBuilder()
       .update(ProductEntity)
       .set({ ...updateProductDto })
-      .where('id = :id', { id: id })
+      .where('product_id = :product_id', { product_id: id })
       .execute();
     if (updatedResult.affected === 0) {
-      throw new NotFoundException('Product not found');
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
   }
   async deleteProductById(id: string): Promise<void> {
-    const deletedProduct = await this.productRepository.delete(id);
+    const deletedProduct = await this.productRepository.delete({
+      product_id: id,
+    });
     if (deletedProduct.affected === 0) {
-      throw new NotFoundException('Product not found');
+      throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
     }
   }
 }

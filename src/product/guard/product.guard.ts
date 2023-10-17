@@ -26,11 +26,6 @@ export class ProductGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.getOrThrow('SECRET_KEY'),
       });
-      if (payload.role !== 'ADMIN')
-        throw new HttpException(
-          'User is not able to do that type of request',
-          HttpStatus.FORBIDDEN,
-        );
       request['user'] = payload;
     } catch (err) {
       if (err.status === 403) throw new Error(err);
