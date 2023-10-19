@@ -45,11 +45,4 @@ export class CartItemController {
   async deleteCartItem(@Param('cart_id', new ParseUUIDPipe()) cart_id: string) {
     return this.cartItemService.deleteCartItem(cart_id);
   }
-
-  @Get('all')
-  @ApiOperation({ summary: 'Get All Cart items' })
-  @UseGuards(AuthGuard)
-  async GetCarts(@Req() req: Request): Promise<CartDto[]> {
-    return this.cartItemService.GetCarts(req['user'].sub);
-  }
 }

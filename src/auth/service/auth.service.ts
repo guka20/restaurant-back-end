@@ -12,11 +12,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { EncryptService } from '@app/restaurant/encrypt/service/encrypt.service';
 import { AdminEntity } from '../UserEntity/admin.entity';
+import { CartEntity } from 'src/cart/entity/cart.entity';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(UserEntity)
     private authRepository: Repository<UserEntity>,
+    @InjectRepository(CartEntity)
+    private cartRepository: Repository<CartEntity>,
     @InjectRepository(AdminEntity)
     private adminRepository: Repository<AdminEntity>,
     private readonly encryptService: EncryptService,
@@ -54,7 +57,10 @@ export class AuthService {
       ...userDto,
     };
     newUser.password = await this.encryptService.hashPassword(userDto.password);
+    const newCart = this.cartRepository.create();
+    const car = await this.cartRepository.save(newCart);
     const user = this.authRepository.create(newUser);
+    user.cart = car;
     await this.authRepository.save(user).catch((err: QueryFailedError) => {
       if (err.driverError.code == 'ER_DUP_ENTRY')
         throw new HttpException('email already in use', HttpStatus.CONFLICT);

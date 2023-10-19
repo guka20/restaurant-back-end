@@ -10,16 +10,19 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { CartDto, CreateCartItemDto } from '../dto/cartitem.dto';
+import { CartEntity } from 'src/cart/entity/cart.entity';
 
 @Injectable()
 export class CartItemService {
   constructor(
+    @InjectRepository(CartEntity)
+    private readonly cartRepository: Repository<CartEntity>,
     @InjectRepository(ProductEntity)
     private readonly productRepository: Repository<ProductEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CartItemEntity)
-    private readonly cartRepository: Repository<CartItemEntity>,
+    private readonly cartItemRepository: Repository<CartItemEntity>,
   ) {}
   async createCart(
     createCartItemDto: CreateCartItemDto,
@@ -28,21 +31,39 @@ export class CartItemService {
     const product = await this.productRepository.findOneBy({
       product_id: createCartItemDto.productId,
     });
-    const user = await this.userRepository.findOneBy({
-      id: ownerId,
+    const user = await this.userRepository.findOne({
+      where: {
+        id: ownerId,
+      },
+      relations: ['cart'],
     });
+    const existingCartItem = await this.cartRepository
+      .createQueryBuilder('cart')
+      .leftJoinAndSelect('cart.cartItems', 'cartItem')
+      .where('cartItem.product = :productId', {
+        productId: product.product_id,
+      })
+      .getOne();
 
+    if (existingCartItem)
+      throw new HttpException(
+        'Product is already in cart',
+        HttpStatus.BAD_REQUEST,
+      );
     if (!user || !product)
       throw new NotFoundException('Wrong token or product id');
-    const newCart = this.cartRepository.create();
-    // newCart.cartowner = user;
-    newCart.product = product;
-    const data = await this.cartRepository.save(newCart);
+    const cart = await this.cartRepository.findOneBy({
+      cart_id: user.cart.cart_id,
+    });
+    const newCartItem = this.cartItemRepository.create();
+    newCartItem.cart = cart;
+    newCartItem.product = product;
+    const data = await this.cartItemRepository.save(newCartItem);
     return data;
   }
 
   async changeQuantity(cart_id: string, quantity: number): Promise<void> {
-    const updatedCart = await this.cartRepository
+    const updatedCart = await this.cartItemRepository
       .createQueryBuilder()
       .update(CartItemEntity)
       .set({
@@ -55,7 +76,7 @@ export class CartItemService {
     }
   }
   async deleteCartItem(cart_id: string): Promise<void> {
-    const deletedCart = await this.cartRepository
+    const deletedCart = await this.cartItemRepository
       .createQueryBuilder()
       .delete()
       .from(CartItemEntity)
@@ -64,12 +85,5 @@ export class CartItemService {
     if (deletedCart.affected === 0) {
       throw new HttpException('Could not find product', HttpStatus.NOT_FOUND);
     }
-  }
-  async GetCarts(owner_id: string): Promise<CartDto[]> {
-    const carts = await this.cartRepository.find({
-      where: {},
-    });
-
-    return carts;
   }
 }

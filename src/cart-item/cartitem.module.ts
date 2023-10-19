@@ -6,10 +6,16 @@ import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import { CartItemEntity } from './entity/cartitem.entity';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
 import { ConfigModule } from '@nestjs/config';
+import { CartEntity } from 'src/cart/entity/cart.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ProductEntity, CartItemEntity, UserEntity]),
+    TypeOrmModule.forFeature([
+      ProductEntity,
+      CartItemEntity,
+      UserEntity,
+      CartEntity,
+    ]),
     ConfigModule,
   ],
   controllers: [CartItemController],

@@ -27,6 +27,6 @@ export class UserEntity {
   password: string;
 
   @OneToOne(() => CartEntity, (cart) => cart.user)
-  @JoinColumn({ name: 'Cart_Id' })
+  @JoinColumn({ name: 'cart' })
   cart: CartEntity;
 }

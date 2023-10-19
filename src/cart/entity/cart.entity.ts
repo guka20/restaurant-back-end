@@ -14,7 +14,6 @@ export class CartEntity {
   cart_id: string;
 
   @OneToOne(() => UserEntity, (user) => user.cart)
-  @JoinColumn({ name: 'user_id' })
   user: UserEntity;
 
   @OneToMany(() => CartItemEntity, (cartitem) => cartitem.cart)

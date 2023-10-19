@@ -39,6 +39,6 @@ export class AuthController {
     @Request() req,
     @Param('uuid', new ParseUUIDPipe()) id: string,
   ): Promise<UserDto> {
-    return this.authService.getUseById(id, req?.user?.sub, req?.user?.role);
+    return this.authService.getUseById(id, req?.user?.sub);
   }
 }
