@@ -34,7 +34,7 @@ export class ProductController {
     @Request() request: Request,
   ) {
     const userId = request['user'].sub;
-    this.productService.createNewProduct(createProductDto, userId);
+    return this.productService.createNewProduct(createProductDto, userId);
   }
 
   @Get()
@@ -60,7 +60,7 @@ export class ProductController {
     @Param('product_id', new ParseUUIDPipe()) productId: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<void> {
-    this.productService.updateProductById(productId, updateProductDto);
+    return this.productService.updateProductById(productId, updateProductDto);
   }
   @Delete(':product_id')
   @UseGuards(ProductGuard)
@@ -68,6 +68,6 @@ export class ProductController {
   async deleteProductById(
     @Param('product_id', new ParseUUIDPipe()) productId: string,
   ): Promise<void> {
-    this.productService.deleteProductById(productId);
+    return this.productService.deleteProductById(productId);
   }
 }

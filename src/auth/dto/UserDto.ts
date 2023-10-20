@@ -1,12 +1,5 @@
 import { UserRole } from 'src/types/user.types';
-import {
-  IsNotEmpty,
-  IsEmail,
-  MinLength,
-  MaxLength,
-  IsEnum,
-  IsOptional,
-} from 'class-validator';
+import { IsNotEmpty, IsEmail, MinLength, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateUserDto {
   @ApiProperty()
@@ -27,11 +20,6 @@ export class CreateUserDto {
 
   @ApiProperty()
   image: string;
-
-  @IsEnum(UserRole)
-  @ApiProperty()
-  @IsOptional()
-  role: UserRole;
 }
 
 export class UserDto {
@@ -43,12 +31,6 @@ export class UserDto {
 
   @ApiProperty()
   email: string;
-
-  @ApiProperty()
-  image: string;
-
-  @ApiProperty()
-  role: string;
 }
 
 export class LogInDto {

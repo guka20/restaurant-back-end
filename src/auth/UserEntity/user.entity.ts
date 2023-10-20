@@ -1,4 +1,5 @@
 import { IsOptional } from 'class-validator';
+import { CartItemEntity } from 'src/cart-item/entity/cartitem.entity';
 import { CartEntity } from 'src/cart/entity/cart.entity';
 import { ProductEntity } from 'src/product/ProductEntity/product.entity';
 import { UserRole } from 'src/types/user.types';
@@ -8,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 
 @Entity('user')
@@ -24,21 +26,7 @@ export class UserEntity {
   @Column()
   password: string;
 
-  @Column({ default: null })
-  image: string;
-
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.USER,
-  })
-  @IsOptional()
-  role: UserRole;
-
-  @OneToMany(() => ProductEntity, (product) => product.owner)
-  products: ProductEntity[];
-
-  @OneToMany(() => CartEntity, (cart) => cart.cartowner)
-  @JoinColumn({ name: 'carts' })
-  carts: CartEntity[];
+  @OneToOne(() => CartEntity, (cart) => cart.user)
+  @JoinColumn({ name: 'cart' })
+  cart: CartEntity;
 }

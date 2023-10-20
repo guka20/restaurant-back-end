@@ -1,80 +1,43 @@
-import { Repository } from 'typeorm';
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
-import { CartEntity } from '../entity/cart.entity';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductEntity } from 'src/product/ProductEntity/product.entity';
+import { CartEntity } from '../entity/cart.entity';
+import { Repository } from 'typeorm';
 import { UserEntity } from 'src/auth/UserEntity/user.entity';
-import { CartDto, CreateCartDto } from '../dto/cart.dto';
 
 @Injectable()
 export class CartService {
   constructor(
-    @InjectRepository(ProductEntity)
-    private readonly productRepository: Repository<ProductEntity>,
-    @InjectRepository(UserEntity)
-    private readonly userRepository: Repository<UserEntity>,
     @InjectRepository(CartEntity)
     private readonly cartRepository: Repository<CartEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async createCart(
-    createCartDto: CreateCartDto,
-    ownerId: string,
-  ): Promise<CartDto> {
-    const product = await this.productRepository.findOneBy({
-      product_id: createCartDto.productId,
-    });
-    const user = await this.userRepository.findOneBy({
-      id: ownerId,
-    });
+  async GetCarts(owner_id: string) {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    queryBuilder
+      .leftJoinAndSelect('user.cart', 'cart')
+      .leftJoinAndSelect('cart.cartItems', 'cartItem')
+      .leftJoinAndSelect('cartItem.product', 'product');
+    queryBuilder.where('user.id = :owner_id', { owner_id });
 
-    if (!user || !product)
-      throw new NotFoundException('Wrong token or product id');
-    const newCart = this.cartRepository.create();
-    newCart.cartowner = user;
-    newCart.product = product;
-    const data = await this.cartRepository.save(newCart);
-    return data;
-  }
-
-  async changeQuantity(cart_id: string, quantity: number): Promise<void> {
-    const updatedCart = await this.cartRepository
-      .createQueryBuilder()
-      .update(CartEntity)
-      .set({
-        quantity,
-      })
-      .where('cart_item_id=:cart_item_id', { cart_item_id: cart_id })
-      .execute();
-    if (updatedCart.affected === 0) {
-      throw new HttpException('Could not find product', HttpStatus.NOT_FOUND);
-    }
-  }
-  async deleteCartItem(cart_id: string): Promise<void> {
-    const deletedCart = await this.cartRepository
-      .createQueryBuilder()
-      .delete()
-      .from(CartEntity)
-      .where('cart_item_id=:cart_item_id', { cart_item_id: cart_id })
-      .execute();
-    if (deletedCart.affected === 0) {
-      throw new HttpException('Could not find product', HttpStatus.NOT_FOUND);
-    }
-  }
-  async GetCarts(owner_id: string): Promise<CartDto[]> {
-    const carts = await this.cartRepository.find({
+    queryBuilder.addSelect(
+      'SUM(cartItem.quantity * product.price)',
+      'totalPrice',
+    );
+    const result = await queryBuilder.getRawOne();
+    const totalPrice = result ? result.totalPrice : 0;
+    const user = await this.userRepository.findOne({
       where: {
-        cartowner: {
-          id: owner_id,
-        },
+        id: owner_id,
       },
-      relations: ['product'],
+      relations: ['cart', 'cart.cartItems', 'cart.cartItems.product'],
     });
-
-    return carts;
+    if (!user) {
+      throw new HttpException(
+        'Provided token is not correct',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return { cart: user.cart, totalPrice };
   }
 }
