@@ -17,4 +17,7 @@ export class AdminEntity {
 
   @OneToMany(() => ProductEntity, (product) => product.owner)
   products: ProductEntity[];
+
+  @Column({ default: 'ADMIN' })
+  role: string;
 }

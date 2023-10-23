@@ -33,7 +33,4 @@ export class ProductEntity {
   @ManyToOne(() => AdminEntity, (admin) => admin.products)
   @JoinColumn({ name: 'owner' })
   owner: AdminEntity;
-
-  @OneToMany(() => CartItemEntity, (cartitem) => cartitem.product)
-  cartitems: CartItemEntity[];
 }

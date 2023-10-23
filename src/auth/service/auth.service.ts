@@ -44,6 +44,7 @@ export class AuthService {
 
     const payload = {
       sub: user ? user.id : admin.id,
+      role: user ? 'USER' : admin.role,
       username: user ? user.fullname : admin.fullname,
     };
 
@@ -61,6 +62,7 @@ export class AuthService {
     const car = await this.cartRepository.save(newCart);
     const user = this.authRepository.create(newUser);
     user.cart = car;
+    
     await this.authRepository.save(user).catch((err: QueryFailedError) => {
       if (err.driverError.code == 'ER_DUP_ENTRY')
         throw new HttpException('email already in use', HttpStatus.CONFLICT);
