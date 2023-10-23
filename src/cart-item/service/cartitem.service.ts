@@ -37,13 +37,34 @@ export class CartItemService {
       },
       relations: ['cart'],
     });
-    const existingCartItem = await this.cartRepository
-      .createQueryBuilder('cart')
-      .leftJoinAndSelect('cart.cartItems', 'cartItem')
-      .where('cartItem.product = :productId', {
-        productId: product.product_id,
-      })
-      .getOne();
+    const existingCartItem = await this.userRepository.findOne({
+      where: {
+        id: ownerId,
+        cart: {
+          cartItems: {
+            product: {
+              product_id: product.product_id,
+            },
+          },
+        },
+      },
+      relations: ['cart', 'cart.cartItems', 'cart.cartItems.product'],
+    });
+
+    // const existingCartItem = await this.userRepository
+    //   .createQueryBuilder('user')
+    //   .leftJoinAndSelect('user.cart', 'cart')
+    //   .leftJoinAndSelect('cart.cartItems', 'cartItem')
+    //   .where('cartItem.product = :productId', {
+    //     productId: product.product_id,
+    //   })
+    // const existingCartItem = await this.cartRepository
+    //   .createQueryBuilder('cart')
+    //   .leftJoinAndSelect('cart.cartItems', 'cartItem')
+    //   .where('cartItem.product = :productId', {
+    //     productId: product.product_id,
+    //   })
+    //   .getOne();
 
     if (existingCartItem)
       throw new HttpException(
